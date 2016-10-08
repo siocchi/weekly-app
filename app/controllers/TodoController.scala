@@ -15,22 +15,22 @@ import models.Task
 @Singleton
 class TodoController @Inject() extends Controller {
 
-val taskForm = Form(
-  "body" -> nonEmptyText
-)
-
-def tasks = Action {
-  Ok(views.html.tasks.index(Task.all(), taskForm))
-}
-
-def newTask = Action { implicit request =>
-  taskForm.bindFromRequest.fold(
-    errors => BadRequest(views.html.tasks.index(Task.all(), errors)),
-    label => {
-      Task.create(label)
-      Redirect(routes.TodoController.tasks)
-    }
+  val taskForm = Form(
+    "body" -> nonEmptyText
   )
-}
+
+  def tasks = Action {
+    Ok(views.html.tasks.index(Task.all(), taskForm))
+  }
+
+  def newTask = Action { implicit request =>
+    taskForm.bindFromRequest.fold(
+      errors => BadRequest(views.html.tasks.index(Task.all(), errors)),
+      label => {
+        Task.create(label)
+        Redirect(routes.TodoController.tasks)
+      }
+    )
+  }
 
 }

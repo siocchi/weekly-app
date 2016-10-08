@@ -3,26 +3,26 @@
 @import helper._
 
 @main("Todo List") {
-    
-    <h1>@tasks.size task(s)</h1>
-    
-    <ul>
-        @tasks.map { task =>
-            <li>
-                @task.body
-                
-            </li>
-        }
-    </ul>
-    
-    <h2>Add a new task</h2>
-    
-    @form(routes.TodoController.newTask) {
-        
-        @inputText(taskForm("body"))
-        
-        <input type="submit" value="Create">
-        
+
+<h1>@tasks.size task(s)</h1>
+
+<ul>
+    @tasks.map { task =>
+    <li>
+        @task.body
+
+    </li>
     }
-    
+</ul>
+
+<h2>Add a new task</h2>
+
+@form(routes.TodoController.newTask) {
+
+@inputText(taskForm("body"))
+
+<input type="submit" value="Create">
+
+}
+
 }
