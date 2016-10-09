@@ -17,7 +17,7 @@ class TodoController @Inject()(val messagesApi: MessagesApi, Tasks: Tasks) exten
     Task.taskForm.bindFromRequest.fold(
       errors => BadRequest(views.html.tasks.index(Tasks.all(), errors)),
       label => {
-        Tasks.create(label)
+        Tasks.create(label, false)
         Redirect(routes.TodoController.tasks)
       }
     )
