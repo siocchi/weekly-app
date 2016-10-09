@@ -4,25 +4,25 @@
 
 @main("Todo List") {
 
-<h1>@tasks.size task(s)</h1>
+    <h1>@tasks.size task(s)</h1>
 
-<ul>
+    <ul>
     @tasks.map { task =>
-    <li>
-        @task.body
+        <li>
+            @task.body
 
-    </li>
+        </li>
     }
-</ul>
+    </ul>
 
-<h2>Add a new task</h2>
+    <h2>Add a new task</h2>
 
-@form(routes.TodoController.newTask) {
+    @form(routes.TodoController.newTask) {
 
-@inputText(taskForm("body"))
+        @inputText(taskForm("body"))
 
-<input type="submit" value="Create">
+        <input type="submit" value="Create">
 
-}
+    }
 
 }

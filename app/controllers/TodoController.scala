@@ -1,16 +1,13 @@
 package controllers
 
 import javax.inject._
-import play.api._
-import play.api.mvc._
-
-import play.api.data._
-import play.api.data.Forms._
-
-import play.api.Play.current
-import play.api.i18n.Messages.Implicits._
 
 import models.Task
+import play.api.Play.current
+import play.api.data.Forms._
+import play.api.data._
+import play.api.i18n.Messages.Implicits._
+import play.api.mvc._
 
 @Singleton
 class TodoController @Inject() extends Controller {
