@@ -2,32 +2,25 @@ package controllers
 
 import javax.inject._
 
-import models.Task
+import models.{Task, Tasks}
 import play.api.Play.current
-import play.api.data.Forms._
-import play.api.data._
 import play.api.i18n.Messages.Implicits._
 import play.api.mvc._
 
 @Singleton
-class TodoController @Inject() extends Controller {
-
-  val taskForm = Form(
-    "body" -> nonEmptyText
-  )
+class TodoController @Inject() (Tasks : Tasks) extends Controller {
 
   def tasks = Action {
-    Ok(views.html.tasks.index(Task.all(), taskForm))
+    Ok(views.html.tasks.index(Tasks.all(), Task.taskForm))
   }
 
   def newTask = Action { implicit request =>
-    taskForm.bindFromRequest.fold(
-      errors => BadRequest(views.html.tasks.index(Task.all(), errors)),
+    Task.taskForm.bindFromRequest.fold(
+      errors => BadRequest(views.html.tasks.index(Tasks.all(), errors)),
       label => {
-        Task.create(label)
+        Tasks.create(label)
         Redirect(routes.TodoController.tasks)
       }
     )
   }
-
 }

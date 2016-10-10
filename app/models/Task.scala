@@ -1,5 +1,9 @@
 package models
 
+import javax.inject.{Inject, Singleton}
+import play.api.data.Forms._
+import play.api.data._
+
 case class Task(
                  id: Long,
                  body: String,
@@ -8,6 +12,13 @@ case class Task(
                )
 
 object Task {
+  val taskForm = Form(
+    "body" -> nonEmptyText
+  )
+}
+
+@Singleton
+class Tasks @Inject()() {
 
   def all(): List[Task] = Nil
 
@@ -16,5 +27,4 @@ object Task {
   }
 
   def delete(id: Long): Unit = ???
-
 }
