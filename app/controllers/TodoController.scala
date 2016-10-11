@@ -3,12 +3,11 @@ package controllers
 import javax.inject._
 
 import models.{Task, Tasks}
-import play.api.Play.current
-import play.api.i18n.Messages.Implicits._
+import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc._
 
 @Singleton
-class TodoController @Inject() (Tasks : Tasks) extends Controller {
+class TodoController @Inject()(val messagesApi: MessagesApi, Tasks: Tasks) extends Controller with I18nSupport {
 
   def tasks = Action {
     Ok(views.html.tasks.index(Tasks.all(), Task.taskForm))
