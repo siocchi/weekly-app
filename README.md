@@ -1,3 +1,5 @@
+![batch](https://travis-ci.org/siocchi/weekly-app.svg?branch=master)
+
 Our Task Management App
 ==========
 
