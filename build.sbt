@@ -14,4 +14,10 @@ libraryDependencies ++= Seq(
   "org.scalatestplus.play" %% "scalatestplus-play" % "1.5.1" % Test
 )
 
+libraryDependencies += "org.webjars" % "bootstrap" % "3.3.4"
+
+includeFilter in (Assets, LessKeys.less) := "main.less"
+
+excludeFilter in (Assets, LessKeys.less) := "_*.less"
+
 fork in run := true
