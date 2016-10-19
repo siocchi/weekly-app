@@ -17,10 +17,8 @@
         <tr>
             <td>@task.body</td>
             <td>
-                <div class="checkbox">
-                    <label><input type="checkbox" value=@task.is_complete></label>
-                </div>
-                </td>
+                <input type="checkbox" value=@task.is_complete>
+            </td>
         </tr>
         }
     </table>
@@ -30,10 +28,10 @@
 <div class="container-fluid bg-2">
     <form method="POST" action="/tasks">
         <div class="form-group">
-            <label for="email">Task detail:</label>
-            <input type="email" class="form-control" id="email">
+            <label for="body">Task detail</label>
+            <input type="text" name="body" class="form-control" id="body">
         </div>
         <button type="submit" class="btn btn-default">Submit</button>
     </form>
-   </div>
+</div>
 }
