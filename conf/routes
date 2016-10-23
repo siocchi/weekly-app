@@ -8,5 +8,6 @@ GET         /assets/*file        controllers.Assets.versioned(path="/public", fi
 # todos
 GET         /                    controllers.TodoController.tasks
 GET         /tasks               controllers.TodoController.tasks
+GET         /tasks.json          controllers.TodoController.tasksJson
 POST        /tasks               controllers.TodoController.newTask
 # POST    /tasks/:id/delete       controllers.TodoController.deleteTask(id: Long)
