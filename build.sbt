@@ -18,7 +18,10 @@ libraryDependencies ++= Seq(
   "com.typesafe.play" %% "anorm" % "2.5.2"
 )
 
-libraryDependencies += "org.webjars" % "bootstrap" % "3.3.4"
+libraryDependencies ++= Seq(
+  "org.webjars" % "bootstrap" % "3.3.4",
+  "org.webjars" %  "react"    % "0.14.8"
+)
 
 includeFilter in (Assets, LessKeys.less) := "main.less"
 
