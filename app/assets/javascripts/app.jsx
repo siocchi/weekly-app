@@ -37,6 +37,7 @@ var TaskList = React.createClass({
           <th>id</th>
           <th>Detail</th>
           <th>Complete</th>
+          <th></th>
         </tr>
       </thead>
       <tbody>
@@ -50,6 +51,7 @@ var TaskList = React.createClass({
 var Task = React.createClass({
   getInitialState: function() {
     return {
+      body: this.props.body,
       is_complete: this.props.is_complete
     };
   },
@@ -74,14 +76,72 @@ var Task = React.createClass({
       }.bind(this)
     });
   },
+  changeText: function(e) {
+    this.setState({
+        edited: this.state.edited,
+        body: this.refs.inputText.value,
+        is_complete: this.state.is_complete
+    });
+  },
+  clickEdit: function() {
+     this.setState({
+         edited: true,
+         body: this.state.body,
+         is_complete: this.state.is_complete
+     });
+  },
+  send: function() {
+    var url = "tasks/" + this.props.id + "/edit.json";
+    var task = {
+      body: this.state.body,
+      is_complete: this.state.is_complete
+    };
+    $.ajax({
+      type: 'post',
+      url: url,
+      contentType: 'application/json',
+      data: JSON.stringify(task),
+      success: function(data) {
+         this.setState({
+            edited: false,
+            body: this.state.body,
+            is_complete: this.state.is_complete
+         });
+      }.bind(this),
+      error: function(xhr, status, err) {
+        console.error(url, status, err.toString());
+      }.bind(this)
+    });
+  },
+
   render: function() {
-    return (
-     <tr>
-       <td>{this.props.id}</td>
-       <td>{this.props.body}</td>
-       <td><input type="checkbox" checked={this.state.is_complete} defaultChecked={this.state.is_complete} onChange={this.changeCheck}/></td>
-     </tr>
-    );
+    if (this.state.edited) {
+       return (
+         <tr>
+           <td>{this.props.id}</td>
+           <td><input type="text" ref="inputText" defaultValue={this.state.body} onChange={this.changeText}/></td>
+           <td><input type="checkbox" checked={this.state.is_complete} defaultChecked={this.state.is_complete} onChange={this.changeCheck}/></td>
+           <td>
+            <button type="button" class="btn btn-default" aria-label="Left Align">
+              <span className="glyphicon glyphicon-send" aria-hidden="true" onClick={this.send} ></span>
+            </button>
+            </td>
+         </tr>
+       );
+    } else {
+       return (
+         <tr>
+           <td>{this.props.id}</td>
+           <td>{this.props.body}</td>
+           <td><input type="checkbox" checked={this.state.is_complete} defaultChecked={this.state.is_complete} onChange={this.changeCheck}/></td>
+           <td>
+            <button type="button" class="btn btn-default" aria-label="Left Align">
+              <span className="glyphicon glyphicon-edit" aria-hidden="true" onClick={this.clickEdit} ></span>
+            </button>
+            </td>
+         </tr>
+       );
+    }
   }
 });
 
