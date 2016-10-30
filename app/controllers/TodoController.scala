@@ -29,4 +29,15 @@ class TodoController @Inject()(val messagesApi: MessagesApi, Tasks: Tasks) exten
       }
     )
   }
+
+  def editTask(id: Long) = Action(BodyParsers.parse.json) { request =>
+    val task = Task(
+      id,
+      (request.body \ "body").as[String],
+      (request.body \ "is_complete").as[Boolean]
+    )
+
+    Tasks.edit(task)
+    Redirect(routes.TodoController.tasks)
+  }
 }
