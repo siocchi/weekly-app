@@ -60,5 +60,5 @@ var Task = React.createClass({
 });
 
 ReactDOM.render(
-    <Detail url="http://localhost:9000/tasks.json" interval={3000} />, document.getElementById("content")
+    <Detail url="tasks.json" interval={3000} />, document.getElementById("content")
 );
