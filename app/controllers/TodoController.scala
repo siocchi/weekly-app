@@ -38,6 +38,6 @@ class TodoController @Inject()(val messagesApi: MessagesApi, Tasks: Tasks) exten
     )
 
     Tasks.edit(task)
-    Redirect(routes.TodoController.tasks)
+    Ok(Json.toJson(task))
   }
 }
