@@ -44,5 +44,13 @@ class Tasks @Inject()(dBApi: DBApi) {
     }
   }
 
-  def delete(id: Long): Unit = ???
+  def edit(task: Task): Unit = {
+    db.withConnection { implicit connection =>
+      SQL("update task set body={body},is_complete={is_complete} where id={id}").on(
+        'body -> task.body,
+        'is_complete -> task.is_complete,
+        'id -> task.id
+      ).executeUpdate()
+    }
+  }
 }
