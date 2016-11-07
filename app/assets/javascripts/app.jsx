@@ -48,12 +48,38 @@ var TaskList = React.createClass({
 });
 
 var Task = React.createClass({
+  getInitialState: function() {
+    return {
+      is_complete: this.props.is_complete
+    };
+  },
+  changeCheck: function(e) {
+    var url = "tasks/" + this.props.id + "/edit.json";
+    var task = {
+      body: this.props.body,
+      is_complete: !this.state.is_complete
+    };
+    $.ajax({
+      type: 'post',
+      url: url,
+      contentType: 'application/json',
+      data: JSON.stringify(task),
+      success: function(data) {
+        this.setState({
+          is_complete: data.is_complete
+        });
+      }.bind(this),
+      error: function(xhr, status, err) {
+        console.error(url, status, err.toString());
+      }.bind(this)
+    });
+  },
   render: function() {
     return (
      <tr>
        <td>{this.props.id}</td>
        <td>{this.props.body}</td>
-       <td>{this.props.is_complete}</td>
+       <td><input type="checkbox" checked={this.state.is_complete} defaultChecked={this.state.is_complete} onChange={this.changeCheck}/></td>
      </tr>
     );
   }
