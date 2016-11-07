@@ -57,7 +57,7 @@ var Task = React.createClass({
     var url = "tasks/" + this.props.id + "/edit.json";
     var task = {
       body: this.props.body,
-      is_complete: this.state.is_complete ? false : true
+      is_complete: !this.state.is_complete
     };
     $.ajax({
       type: 'post',
@@ -66,7 +66,7 @@ var Task = React.createClass({
       data: JSON.stringify(task),
       success: function(data) {
         this.setState({
-          is_complete: task.is_complete
+          is_complete: data.is_complete
         });
       }.bind(this),
       error: function(xhr, status, err) {
@@ -79,7 +79,7 @@ var Task = React.createClass({
      <tr>
        <td>{this.props.id}</td>
        <td>{this.props.body}</td>
-       <td><input type="checkbox" defaultChecked={this.state.is_complete} onChange={this.changeCheck}/></td>
+       <td><input type="checkbox" checked={this.state.is_complete} defaultChecked={this.state.is_complete} onChange={this.changeCheck}/></td>
      </tr>
     );
   }
