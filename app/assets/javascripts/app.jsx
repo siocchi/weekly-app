@@ -26,9 +26,13 @@ var Detail = React.createClass({
 
 var TaskList = React.createClass({
   render: function() {
-    var tasks = this.props.data.map(function (t) {
-      return (<Task id={t.id} body={t.body} is_complete={t.is_complete} />);
-    });
+    var tasks = this.props.data
+        .sort(function (a, b) {
+          return a.id - b.id; // いまのところ ID 順
+        })
+        .map(function (t) {
+          return (<Task id={t.id} body={t.body} is_complete={t.is_complete} />);
+        });
 
     return (
     <table id="tasks" className="table table-striped table-bordered" cellspacing="0" width="100%">
