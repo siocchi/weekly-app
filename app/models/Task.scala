@@ -1,14 +1,12 @@
 package models
 
 import javax.inject.{Inject, Singleton}
-import anorm._
+
 import anorm.SqlParser._
-
+import anorm._
 import play.api.data.Form
-import play.api.db.DBApi
-
-import play.api.data._
 import play.api.data.Forms._
+import play.api.db.DBApi
 
 case class Task(
                  id: Long,
@@ -32,7 +30,7 @@ class Tasks @Inject()(dBApi: DBApi) {
   }
 
   def all(): List[Task] = db.withConnection { implicit connection =>
-    SQL("select * from task").as(task *)
+    SQL("select * from task order by id").as(task *)
   }
 
   def create(body: String, is_complete: Boolean) {
