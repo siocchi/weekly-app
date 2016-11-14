@@ -40,4 +40,9 @@ class TodoController @Inject()(val messagesApi: MessagesApi, Tasks: Tasks) exten
     Tasks.edit(task)
     Ok(Json.toJson(task))
   }
+
+  def deleteTask(id: Long) = Action { request =>
+    Tasks.delete(id)
+    Ok("")
+  }
 }

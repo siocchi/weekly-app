@@ -30,7 +30,7 @@ class Tasks @Inject()(dBApi: DBApi) {
   }
 
   def all(): List[Task] = db.withConnection { implicit connection =>
-    SQL("select * from task order by id").as(task *)
+    SQL("select * from task where hidden=false order by id").as(task *)
   }
 
   def create(body: String, is_complete: Boolean) {
@@ -48,6 +48,15 @@ class Tasks @Inject()(dBApi: DBApi) {
         'body -> task.body,
         'is_complete -> task.is_complete,
         'id -> task.id
+      ).executeUpdate()
+    }
+  }
+
+
+  def delete(id: Long): Unit = {
+    db.withConnection { implicit connection =>
+      SQL("update task set hidden=true where id={id}").on(
+        'id -> id
       ).executeUpdate()
     }
   }
