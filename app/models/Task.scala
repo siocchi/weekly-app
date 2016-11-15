@@ -52,6 +52,11 @@ class Tasks @Inject()(dBApi: DBApi) {
     }
   }
 
+  def task(id: Long): Task = {
+    db.withConnection { implicit connection =>
+      SQL("select * from task where id={id}").on('id -> id).as(task *) head
+    }
+  }
 
   def delete(id: Long): Unit = {
     db.withConnection { implicit connection =>
