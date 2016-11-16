@@ -9,6 +9,7 @@ GET         /assets/*file        controllers.Assets.versioned(path="/public", fi
 GET         /                    controllers.TodoController.tasks
 GET         /tasks               controllers.TodoController.tasks
 GET         /tasks.json          controllers.TodoController.tasksJson
+GET         /tasks/:id.json      controllers.TodoController.taskJson(id: Long)
 POST        /tasks               controllers.TodoController.newTask
 POST        /tasks.json          controllers.TodoController.newTaskJson
 POST        /tasks/:id/edit.json controllers.TodoController.editTask(id: Long)
