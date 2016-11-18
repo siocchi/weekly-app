@@ -33,12 +33,12 @@ class Tasks @Inject()(dBApi: DBApi) {
     SQL("select * from task where hidden=false order by id").as(task *)
   }
 
-  def create(body: String, is_complete: Boolean) {
+  def create(body: String, is_complete: Boolean): Option[Long] = {
     db.withConnection { implicit connection =>
       SQL("insert into task (body,is_complete) values ({body},{is_complete})").on(
         'body -> body,
         'is_complete -> is_complete
-      ).executeUpdate()
+      ).executeInsert()
     }
   }
 

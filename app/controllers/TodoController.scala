@@ -30,6 +30,19 @@ class TodoController @Inject()(val messagesApi: MessagesApi, Tasks: Tasks) exten
     )
   }
 
+  def newTaskJson = Action(BodyParsers.parse.json) { request =>
+    // TODO: 入力の Validation
+    val body = (request.body \ "body").as[String]
+    val newTaskId = Tasks.create(body, false)
+    newTaskId match {
+      case Some(id) =>
+        val task = Tasks.task(id)
+        Ok(Json.toJson(task))
+      case None =>
+        InternalServerError
+    }
+  }
+
   def editTask(id: Long) = Action(BodyParsers.parse.json) { request =>
     val task = Task(
       id,
