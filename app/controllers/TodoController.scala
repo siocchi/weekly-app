@@ -13,7 +13,7 @@ class TodoController @Inject()(val messagesApi: MessagesApi, Tasks: Tasks) exten
   implicit val taskFormat = Json.format[Task]
 
   def tasks = Action {
-    Ok(views.html.tasks.index(Tasks.all(), Task.taskForm))
+    Ok(views.html.tasks.index(Tasks.all()))
   }
 
   def tasksJson = Action {
@@ -22,12 +22,25 @@ class TodoController @Inject()(val messagesApi: MessagesApi, Tasks: Tasks) exten
 
   def newTask = Action { implicit request =>
     Task.taskForm.bindFromRequest.fold(
-      errors => BadRequest(views.html.tasks.index(Tasks.all(), errors)),
+      errors => BadRequest(views.html.tasks.index(Tasks.all())),
       label => {
         Tasks.create(label, false)
         Redirect(routes.TodoController.tasks)
       }
     )
+  }
+
+  def newTaskJson = Action(BodyParsers.parse.json) { request =>
+    // TODO: 入力の Validation
+    val body = (request.body \ "body").as[String]
+    val newTaskId = Tasks.create(body, false)
+    newTaskId match {
+      case Some(id) =>
+        val task = Tasks.task(id)
+        Ok(Json.toJson(task))
+      case None =>
+        InternalServerError
+    }
   }
 
   def editTask(id: Long) = Action(BodyParsers.parse.json) { request =>

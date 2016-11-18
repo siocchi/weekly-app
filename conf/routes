@@ -10,5 +10,6 @@ GET         /                    controllers.TodoController.tasks
 GET         /tasks               controllers.TodoController.tasks
 GET         /tasks.json          controllers.TodoController.tasksJson
 POST        /tasks               controllers.TodoController.newTask
+POST        /tasks.json          controllers.TodoController.newTaskJson
 POST        /tasks/:id/edit.json controllers.TodoController.editTask(id: Long)
 DELETE      /tasks/:id           controllers.TodoController.deleteTask(id: Long)

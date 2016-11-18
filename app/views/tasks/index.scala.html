@@ -1,16 +1,6 @@
-@(tasks: List[Task], taskForm: Form[String])(implicit messages: Messages)
-
-@import helper._
+@(tasks: List[Task])(implicit messages: Messages)
 
 @main("Todo List") {
-<div class="container-fluid bg-2">
-    <form method="POST" action="/tasks">
-        <div class="form-group">
-            <label for="body">Task detail</label>
-            <input type="text" name="body" class="form-control" id="body">
-        </div>
-        <button type="submit" class="btn btn-default">Submit</button>
-    </form>
-</div>
-<div class="container-fluid bg-3" id="content" />
+    <div class="container-fluid bg-2" id="register"></div>
+    <div class="container-fluid bg-3" id="content" />
 }
