@@ -88,6 +88,44 @@ var Task = React.createClass({
     );
   }
 });
+var Register = React.createClass({
+  getInitialState: function() {
+    return {};
+  },
+  handleSubmit: function(e) {
+    var task = {
+      body: this.refs.body.value
+    };
+    $.ajax({
+      type: 'post',
+      url: "tasks",
+      contentType: 'application/json',
+      data: JSON.stringify(task),
+      success: function(data) {
+        // TODO 強制リロード
+      }.bind(this),
+      error: function(xhr, status, err) {
+        console.error(url, status, err.toString());
+      }.bind(this)
+    });
+    e.preventDefault(); // ページのリロードをキャンセルする
+  },
+  render: function() {
+    return (
+        <form onSubmit={this.handleSubmit}>
+          <div className="form-group">
+            <label for="body">Task detail</label>
+            <input type="text" ref="body" name="body" className="form-control" id="body"/>
+          </div>
+          <button type="submit" className="btn btn-default">Submit</button>
+        </form>
+    );
+  }
+});
+
+ReactDOM.render(
+    <Register />, document.getElementById("register")
+);
 
 ReactDOM.render(
     <Detail url="tasks.json" interval={3000} />, document.getElementById("content")
