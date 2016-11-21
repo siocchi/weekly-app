@@ -11,8 +11,7 @@ import play.api.db.DBApi
 case class Task(
                  id: Long,
                  body: String,
-                 is_complete: Boolean
-                 // TODO due: Datetime
+                 numQuota: Int
                )
 
 object Task {
@@ -25,28 +24,28 @@ object Task {
 class Tasks @Inject()(dBApi: DBApi) {
   private val db = dBApi.database("default")
 
-  val task = get[Long]("id") ~ get[String]("body") ~ get[Boolean]("is_complete") map {
-    case id ~ body ~ is_complete => Task(id, body, is_complete)
+  val task = get[Long]("id") ~ get[String]("body") ~ get[Int]("num_quota") map {
+    case id ~ body ~ num => Task(id, body, num)
   }
 
   def all(): List[Task] = db.withConnection { implicit connection =>
     SQL("select * from task where hidden=false order by id").as(task *)
   }
 
-  def create(body: String, is_complete: Boolean): Option[Long] = {
+  def create(body: String, num: Integer): Option[Long] = {
     db.withConnection { implicit connection =>
-      SQL("insert into task (body,is_complete) values ({body},{is_complete})").on(
+      SQL("insert into task (body,num_quota) values ({body},{num_quota})").on(
         'body -> body,
-        'is_complete -> is_complete
+        'num_quota -> num
       ).executeInsert()
     }
   }
 
   def edit(task: Task): Unit = {
     db.withConnection { implicit connection =>
-      SQL("update task set body={body},is_complete={is_complete} where id={id}").on(
+      SQL("update task set body={body},num_quota={num_quota} where id={id}").on(
         'body -> task.body,
-        'is_complete -> task.is_complete,
+        'num_quota -> task.numQuota,
         'id -> task.id
       ).executeUpdate()
     }

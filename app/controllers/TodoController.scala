@@ -24,7 +24,7 @@ class TodoController @Inject()(val messagesApi: MessagesApi, Tasks: Tasks) exten
     Task.taskForm.bindFromRequest.fold(
       errors => BadRequest(views.html.tasks.index(Tasks.all())),
       label => {
-        Tasks.create(label, false)
+        Tasks.create(label, 1)
         Redirect(routes.TodoController.tasks)
       }
     )
@@ -33,7 +33,7 @@ class TodoController @Inject()(val messagesApi: MessagesApi, Tasks: Tasks) exten
   def newTaskJson = Action(BodyParsers.parse.json) { request =>
     // TODO: 入力の Validation
     val body = (request.body \ "body").as[String]
-    val newTaskId = Tasks.create(body, false)
+    val newTaskId = Tasks.create(body, 1)
     newTaskId match {
       case Some(id) =>
         val task = Tasks.task(id)
@@ -47,7 +47,7 @@ class TodoController @Inject()(val messagesApi: MessagesApi, Tasks: Tasks) exten
     val task = Task(
       id,
       (request.body \ "body").as[String],
-      (request.body \ "is_complete").as[Boolean]
+      (request.body \ "num_quota").as[Int]
     )
 
     Tasks.edit(task)
