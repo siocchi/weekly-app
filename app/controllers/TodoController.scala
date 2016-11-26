@@ -44,8 +44,10 @@ class TodoController @Inject()(val messagesApi: MessagesApi, Tasks: Tasks) exten
   }
 
   def taskJson(id: Long) = Action { request =>
-    val task = Tasks.task(id)
-    Ok(Json.toJson(task))
+    Tasks.task(id) match {
+      case Some(task) => Ok(Json.toJson(task))
+      case _ => InternalServerError
+    }
   }
 
   def editTask(id: Long) = Action(BodyParsers.parse.json) { request =>

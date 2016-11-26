@@ -52,9 +52,9 @@ class Tasks @Inject()(dBApi: DBApi) {
     }
   }
 
-  def task(id: Long): Task = {
+  def task(id: Long): Option[Task] = {
     db.withConnection { implicit connection =>
-      SQL("select * from task where id={id}").on('id -> id).as(task *) head
+      SQL("select * from task where id={id}").on('id -> id).as(task *) headOption
     }
   }
 
