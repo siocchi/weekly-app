@@ -46,7 +46,7 @@ class TodoController @Inject()(val messagesApi: MessagesApi, Tasks: Tasks) exten
   def taskJson(id: Long) = Action { request =>
     Tasks.task(id) match {
       case Some(task) => Ok(Json.toJson(task))
-      case _ => InternalServerError
+      case _ => NotFound
     }
   }
 
