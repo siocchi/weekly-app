@@ -31,7 +31,7 @@ var TaskList = React.createClass({
           return a.id - b.id; // いまのところ ID 順
         })
         .map(function (t) {
-          return (<Task id={t.id} body={t.body} num_quota={t.numQuota} />);
+          return (<Task id={t.id} body={t.body} numQuota={t.numQuota} />);
         });
 
     return (
@@ -54,14 +54,14 @@ var TaskList = React.createClass({
 var Task = React.createClass({
   getInitialState: function() {
     return {
-      num_quota: this.props.num_quota
+      numQuota: this.props.numQuota
     };
   },
   changeCheck: function(e) {
     var url = "tasks/" + this.props.id + "/edit.json";
     var task = {
       body: this.props.body,
-      num_quota: (this.state.num_quota==0 ? 1 : 0)
+      numQuota: (this.state.numQuota==0 ? 1 : 0)
     };
     $.ajax({
       type: 'post',
@@ -70,7 +70,7 @@ var Task = React.createClass({
       data: JSON.stringify(task),
       success: function(data) {
         this.setState({
-          num_quota: data.numQuota
+          numQuota: data.numQuota
         });
       }.bind(this),
       error: function(xhr, status, err) {
@@ -83,7 +83,7 @@ var Task = React.createClass({
      <tr>
        <td>{this.props.id}</td>
        <td>{this.props.body}</td>
-       <td><input type="checkbox" checked={this.state.num_quota == 0} defaultChecked={this.state.num_quota == 0} onChange={this.changeCheck}/></td>
+       <td><input type="checkbox" checked={this.state.numQuota == 0} defaultChecked={this.state.numQuota == 0} onChange={this.changeCheck}/></td>
      </tr>
     );
   }
