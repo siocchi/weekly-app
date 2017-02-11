@@ -251,6 +251,9 @@ func (db *taskDbGoon) EditTask(id string, uid string, ew EditTask, r *http.Reque
 	if (ew.Kind!="norm_count") {
 		ew.NormCount = w.NormCount
 	}
+	if (ew.Kind!="count") {
+		ew.Count = w.Count
+	}
 	if (ew.Kind!="reviewed_at") {
 		ew.ReviewedAt = w.ReviewedAt
 	} else {
@@ -348,6 +351,9 @@ func (db *taskDbGoon) NewUser(uid string, user string, r *http.Request) error {
 	g := goon.NewGoon(r)
 
 	// TODO validate username
+	if len(user) < 3 {
+		return errors.New("too short")
+	}
 
 	profiles := []ProfileGoon{}
 	if _, err := g.GetAll(datastore.NewQuery("ProfileGoon").Filter("user_name =", user), &profiles); err != nil {

@@ -84,6 +84,8 @@ class TaskList extends React.Component{
         <tr>
           <th className="mdl-data-table__cell--non-numeric" style={{width: 320 +"px"}}>タスク</th>
           <th className="mdl-data-table__cell--non-numeric">済</th>
+          <th className="mdl-data-table__cell--non-numeric">済回数</th>
+          <th className="mdl-data-table__cell--non-numeric">ノルマ</th>
           <th></th>
           <th></th>
         </tr>
@@ -101,14 +103,11 @@ class Task extends React.Component {
     super(props);
     this.state = {
       is_review: this.props.w.is_review,
-      is_input: this.props.w.is_input,
     };
 
     this.changeReview = this.changeReview.bind(this);
-    this.changeInput = this.changeInput.bind(this);
     this.delete = this.delete.bind(this);
   }
-
 
   changeReview(e) {
     e.preventDefault();
@@ -126,30 +125,6 @@ class Task extends React.Component {
       success: function(data) {
         this.props.doLoad();
         this.setState({is_review: data.is_review});
-      }.bind(this),
-      error: function(xhr, status, err) {
-        console.error(url, status, err.toString());
-      }.bind(this)
-    });
-  }
-
-  changeInput(e) {
-    e.preventDefault();
-
-    var url = config.host + "/v1/task/" + this.props.w.id + "/edit.json";
-    var new_w = {
-      "is_input" : this.state.is_input ? false : true,
-      "kind": "is_input"
-    };
-
-    $.ajax({
-      type: 'post',
-      url: url,
-      contentType: 'application/json',
-      data: JSON.stringify(new_w),
-      success: function(data) {
-        this.props.doLoad();
-        this.setState({is_input: data.is_input});
       }.bind(this),
       error: function(xhr, status, err) {
         console.error(url, status, err.toString());
@@ -194,10 +169,16 @@ class Task extends React.Component {
     return (
      <tr>
       <td className="mdl-data-table__cell--non-numeric" style={{fontColor: 'rgba(0, 0, 0, 0.5)'}}>
-        <MemoInput text={this.props.w.text} id={this.props.w.id} />
+        <MemoInput text={this.props.w.text} kind="text" id={this.props.w.id} />
       </td>
       <td>
         <Switch id="switch2" checked={this.state.is_review} onChange={this.changeReview}/>
+      </td>
+      <td className="mdl-data-table__cell--non-numeric" style={{fontColor: 'rgba(0, 0, 0, 0.5)'}}>
+        <MemoInput text={this.props.w.norm_count} kind="norm_count" id={this.props.w.id} />
+      </td>
+      <td className="mdl-data-table__cell--non-numeric" style={{fontColor: 'rgba(0, 0, 0, 0.5)'}}>
+        <MemoInput text={this.props.w.count} kind="count" id={this.props.w.id} />
       </td>
       <td>{this.to_friendly_date(now, this.props.w.created_at)}</td>
       <td>
@@ -231,9 +212,13 @@ class MemoInput extends React.Component {
 
     var url = config.host + "/v1/task/" + this.props.id + "/edit.json";
     var new_w = {
-      "text" :  this.refs.text.value,
-      "kind": "text"
+      "kind": this.props.kind
     };
+    new_w[this.props.kind] =  this.refs.text.value;
+    if (this.props.kind != "text") {
+      new_w[this.props.kind] =  Number(this.refs.text.value);
+    }
+
 
     $.ajax({
       type: 'post',
