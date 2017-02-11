@@ -20,7 +20,7 @@ type TaskGoon struct {
 	Memo string `datastore:"memo"`
 	Tag	 string `datastore:"tag"`
 	IsReview bool `datastore:"is_review"`
-	IsInput bool `datastore:"is_input"`
+	NormCount int `datastore:"norm_count"`
 	Count int	 `datastore:"count"`
 	Priority int `datastore:"priority"`
 	CreatedAt time.Time `datastore:"created_at"`
@@ -80,7 +80,7 @@ func (db *taskDbGoon) GetTask(key string, uid string, r *http.Request) (Task, er
 		Memo: w.Memo,
 		Tag: w.Tag,
 		IsReview: w.IsReview,
-		IsInput: w.IsInput,
+		NormCount: w.NormCount,
 		Count: w.Count,
 		Priority: w.Priority,
 		CreatedAt: w.CreatedAt,
@@ -129,7 +129,7 @@ func (db *taskDbGoon) GetAll(uid string, is_review bool, duration_s string, r *h
 			Memo: w.Memo,
 			Tag: w.Tag,
 			IsReview: w.IsReview,
-			IsInput: w.IsInput,
+			NormCount: w.NormCount,
 			Count: w.Count,
 			Priority: w.Priority,
 			CreatedAt: w.CreatedAt,
@@ -154,7 +154,7 @@ func (db *taskDbGoon) GetPublicAll(uid string, r *http.Request) ([]Task, error) 
 				Memo: "",
 				Tag: "",
 				IsReview: false,
-				IsInput: false,
+				NormCount: 0,
 				Count: w.Count,
 				Priority: w.Priority,
 				CreatedAt: w.CreatedAt,
@@ -200,8 +200,8 @@ func (db *taskDbGoon) AddTask(uid string, w PostTask, r *http.Request) (string, 
 		Text: w.Text,
 		Memo: "",
 		Tag:  "",
-		IsReview: true,
-		IsInput: true,
+		IsReview: false,
+		NormCount: 0,
 		Count: 0,
 		Priority: 0,
 		CreatedAt: time.Now(),
@@ -248,8 +248,8 @@ func (db *taskDbGoon) EditTask(id string, uid string, ew EditTask, r *http.Reque
 	if (ew.Kind!="is_review") {
 		ew.IsReview = w.IsReview
 	}
-	if (ew.Kind!="is_input") {
-		ew.IsInput = w.IsInput
+	if (ew.Kind!="norm_count") {
+		ew.NormCount = w.NormCount
 	}
 	if (ew.Kind!="reviewed_at") {
 		ew.ReviewedAt = w.ReviewedAt
@@ -264,7 +264,7 @@ func (db *taskDbGoon) EditTask(id string, uid string, ew EditTask, r *http.Reque
 		Memo: w.Memo,
 		Tag: ew.Tag,
 		IsReview: ew.IsReview,
-		IsInput: ew.IsInput,
+		NormCount: ew.NormCount,
 		Count: ew.Count,
 		Priority: ew.Priority,
 		CreatedAt: w.CreatedAt,

@@ -33,7 +33,7 @@ type (
 		Memo string `json:"memo"`
 		Tag	 string `json:"tag"`
 		IsReview bool `json:"is_review"`
-		IsInput bool `json:"is_input"`
+		NormCount int `json:"norm_count"`
 		Count int	 `json:"count"`
 		Priority int `json:"priority"`
 		CreatedAt time.Time `json:"created_at"`
@@ -50,7 +50,7 @@ type (
 		Text     string `form:"text" json:"text"`
 		Tag     string `form:"tag" json:"tag"`
 		IsReview bool `json:"is_review"`
-		IsInput bool `json:"is_input"`
+		NormCount int `json:"norm_count"`
 		Count     int `form:"count" json:"count"`
 		Priority  int `form:"priority" json:"priority"`
 		ReviewedAt time.Time `json:"reviewed_at"`
@@ -168,11 +168,13 @@ func createUser(c *gin.Context) {
 
 	var json PostUser
 	if c.BindJSON(&json) != nil {
+		log.Debugf(appengine.NewContext(c.Request), "failed to create ")
 		c.JSON(http.StatusBadRequest, gin.H{"status": "bad request"})
 		return
 	}
 
 	if err := db.NewUser(profile.ID, json.User, c.Request); err != nil {
+		log.Debugf(appengine.NewContext(c.Request), "failed to create %v %v", profile, json)
 		c.JSON(http.StatusBadRequest, gin.H{"status": "bad request"})
 		return
 	}
