@@ -82,8 +82,7 @@ class TaskList extends React.Component{
     <table id="tasks" className="mdl-data-table" cellSpacing="0" width="100%">
       <thead>
         <tr>
-          <th>タスク</th>
-          <th className="mdl-data-table__cell--non-numeric" style={{width: 320 +"px"}}>Memo</th>
+          <th className="mdl-data-table__cell--non-numeric" style={{width: 320 +"px"}}>タスク</th>
           <th className="mdl-data-table__cell--non-numeric">済</th>
           <th></th>
           <th></th>
@@ -194,9 +193,8 @@ class Task extends React.Component {
     var now = new Date();
     return (
      <tr>
-      <td><strong><Checkbox label={this.props.w.text} checked={true} /></strong></td>
       <td className="mdl-data-table__cell--non-numeric" style={{fontColor: 'rgba(0, 0, 0, 0.5)'}}>
-        <MemoInput memo={this.props.w.memo} id={this.props.w.id} />
+        <MemoInput text={this.props.w.text} id={this.props.w.id} />
       </td>
       <td>
         <Switch id="switch2" checked={this.state.is_review} onChange={this.changeReview}/>
@@ -213,28 +211,28 @@ class Task extends React.Component {
 class MemoInput extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {is_input: false, memo: this.props.memo };
+    this.state = {is_input: false, text: this.props.text };
     this.editMemo = this.editMemo.bind(this);
     this.changeMode = this.changeMode.bind(this);
   }
 
   changeMode() {
     if (this.state.is_input) {
-      this.setState({is_input: false, memo: this.state.memo });
+      this.setState({is_input: false, text: this.state.text });
     } else {
-      this.setState({is_input: true, memo: this.state.memo });
+      this.setState({is_input: true, text: this.state.text });
     }
   }
 
   editMemo(e) {
     e.preventDefault();
 
-    if (this.refs.memo.value.trim().length==0 ) return;
+    if (this.refs.text.value.trim().length==0 ) return;
 
     var url = config.host + "/v1/task/" + this.props.id + "/edit.json";
     var new_w = {
-      "memo" :  this.refs.memo.value,
-      "kind": "memo"
+      "text" :  this.refs.text.value,
+      "kind": "text"
     };
 
     $.ajax({
@@ -243,7 +241,7 @@ class MemoInput extends React.Component {
       contentType: 'application/json',
       data: JSON.stringify(new_w),
       success: function(data) {
-        this.setState({is_input: false, memo: this.refs.memo.value });
+        this.setState({is_input: false, text: this.refs.text.value });
       }.bind(this),
       error: function(xhr, status, err) {
         console.error(url, status, err.toString());
@@ -256,14 +254,14 @@ class MemoInput extends React.Component {
     if(this.state.is_input) {
     return (
       <div>
-      <textarea className="mdl-textfield__input" type="text" rows= "3" ref="memo" name="memo" defaultValue={this.state.memo} style={{width: "100%", border:"1px solid rgba(0,0,0,.12)"}} />
+      <textarea className="mdl-textfield__input" type="text" rows= "3" ref="text" name="text" defaultValue={this.state.text} style={{width: "100%", border:"1px solid rgba(0,0,0,.12)"}} />
       <div className="mdl-layout-spacer" />
       <IconButton name="mode_edit" onClick={this.editMemo}/>
       </div>
     );
   } else {
     return (<div>
-    {this.state.memo}
+    {this.state.text}
     <IconButton name="mode_edit" onClick={this.changeMode}/>
     </div>);
   }

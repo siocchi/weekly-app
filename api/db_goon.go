@@ -243,8 +243,8 @@ func (db *taskDbGoon) EditTask(id string, uid string, ew EditTask, r *http.Reque
 		return Task{}, errors.New("uid invalid")
 	}
 
-	if (ew.Kind!="memo") {
-		ew.Memo = w.Memo
+	if (ew.Kind!="text") {
+		ew.Text = w.Text
 	}
 	if (ew.Kind!="tag") {
 		ew.Tag = w.Tag
@@ -264,8 +264,8 @@ func (db *taskDbGoon) EditTask(id string, uid string, ew EditTask, r *http.Reque
 	wg := TaskGoon{
 		Id:   id,
 		Uid:  uid_key,
-		Text: w.Text,
-		Memo: ew.Memo,
+		Text: ew.Text,
+		Memo: w.Memo,
 		Tag: ew.Tag,
 		IsReview: ew.IsReview,
 		IsInput: ew.IsInput,
