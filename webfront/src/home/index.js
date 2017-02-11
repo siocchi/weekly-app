@@ -82,8 +82,9 @@ class TaskList extends React.Component{
     <table id="tasks" className="mdl-data-table" cellSpacing="0" width="100%">
       <thead>
         <tr>
-          <th className="mdl-data-table__cell--non-numeric" style={{width: 320 +"px"}}>タスク</th>
+          <th className="mdl-data-table__cell--non-numeric" style={{width: 240 +"px"}}>タスク</th>
           <th className="mdl-data-table__cell--non-numeric">済</th>
+          <th className="mdl-data-table__cell--non-numeric" style={{width: 240 +"px"}}>メモ</th>
           <th className="mdl-data-table__cell--non-numeric">済回数</th>
           <th className="mdl-data-table__cell--non-numeric">ノルマ</th>
           <th></th>
@@ -166,6 +167,14 @@ class Task extends React.Component {
 
   render() {
     var now = new Date();
+
+    var memo;
+    if (this.state.is_review) {
+      memo = <td><MemoInput text={this.props.w.memo} kind="memo" id={this.props.w.id} /></td>;
+    } else {
+      memo = <td></td>;
+    }
+
     return (
      <tr>
       <td className="mdl-data-table__cell--non-numeric" style={{fontColor: 'rgba(0, 0, 0, 0.5)'}}>
@@ -174,6 +183,7 @@ class Task extends React.Component {
       <td>
         <Switch id="switch2" checked={this.state.is_review} onChange={this.changeReview}/>
       </td>
+      {memo}
       <td className="mdl-data-table__cell--non-numeric" style={{fontColor: 'rgba(0, 0, 0, 0.5)'}}>
         <MemoInput text={this.props.w.norm_count} kind="norm_count" id={this.props.w.id} />
       </td>
@@ -215,10 +225,9 @@ class MemoInput extends React.Component {
       "kind": this.props.kind
     };
     new_w[this.props.kind] =  this.refs.text.value;
-    if (this.props.kind != "text") {
+    if (this.props.kind != "text" && this.props.kind != "memo") {
       new_w[this.props.kind] =  Number(this.refs.text.value);
     }
-
 
     $.ajax({
       type: 'post',

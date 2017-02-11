@@ -48,7 +48,7 @@ type (
 	EditTask struct {
 		Kind     string `form:"kind" json:"kind"`
 		Text     string `form:"text" json:"text"`
-		Tag     string `form:"tag" json:"tag"`
+		Memo     string `form:"memo" json:"memo"`
 		IsReview bool `json:"is_review"`
 		NormCount int `json:"norm_count"`
 		Count     int `form:"count" json:"count"`

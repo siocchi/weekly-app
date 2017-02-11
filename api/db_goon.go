@@ -242,8 +242,8 @@ func (db *taskDbGoon) EditTask(id string, uid string, ew EditTask, r *http.Reque
 	if (ew.Kind!="text") {
 		ew.Text = w.Text
 	}
-	if (ew.Kind!="tag") {
-		ew.Tag = w.Tag
+	if (ew.Kind!="memo") {
+		ew.Memo = w.Memo
 	}
 	if (ew.Kind!="is_review") {
 		ew.IsReview = w.IsReview
@@ -264,8 +264,8 @@ func (db *taskDbGoon) EditTask(id string, uid string, ew EditTask, r *http.Reque
 		Id:   id,
 		Uid:  uid_key,
 		Text: ew.Text,
-		Memo: w.Memo,
-		Tag: ew.Tag,
+		Memo: ew.Memo,
+		Tag: w.Tag,
 		IsReview: ew.IsReview,
 		NormCount: ew.NormCount,
 		Count: ew.Count,
