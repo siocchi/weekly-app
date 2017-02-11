@@ -285,6 +285,59 @@ func (db *taskDbGoon) EditTask(id string, uid string, ew EditTask, r *http.Reque
 	return w2, err
 }
 
+func (db *taskDbGoon) CopyTask(id string, uid string, r *http.Request) (Task, error) {
+
+	g := goon.NewGoon(r)
+
+	uid_key, err := db.GetProfileKey(uid, r)
+	if err != nil {
+		return Task{}, err
+	}
+
+	new_id, err1 := db.GenId(r)
+	if err1 != nil {
+		log.Debugf(appengine.NewContext(r), "%v", err1)
+		return Task{}, err1
+	}
+
+	w := new(TaskGoon)
+	w.Id = id
+	w.Uid = uid_key
+	if err := g.Get(w); err != nil {
+		log.Debugf(appengine.NewContext(r), "edit:%v", err)
+		return Task{}, err
+	}
+
+	if w.Uid != uid_key {
+		return Task{}, errors.New("uid invalid")
+	}
+
+	wg := TaskGoon{
+		Id:   new_id,
+		Uid:  uid_key,
+		Text: w.Text,
+		Memo: "",
+		Tag: "",
+		IsReview: false,
+		NormCount: w.NormCount,
+		Count: 0,
+		Priority: w.Priority,
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
+		ReviewedAt: time.Now(),
+	}
+
+	if _, err := g.Put(&wg); err != nil {
+		log.Debugf(appengine.NewContext(r), "%v", err)
+		return Task{}, err
+	}
+
+	w2, err := db.GetTask(new_id, uid, r)
+	log.Debugf(appengine.NewContext(r), "updated:%v", w2)
+	return w2, err
+}
+
+
 func (db *taskDbGoon) Delete(id string, uid string, r *http.Request) error {
 	g := goon.NewGoon(r)
 

@@ -17,6 +17,8 @@ type TaskDb interface {
 
 	EditTask(string, string, EditTask, *http.Request) (Task, error)
 
+	CopyTask(string, string, *http.Request) (Task, error)
+
 	Delete(string, string, *http.Request) error
 
 	NewUser(string, string, *http.Request) error
@@ -115,6 +117,22 @@ func create(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{"status": "ok"})
 	} else {
 		c.JSON(http.StatusBadRequest, gin.H{"status": "parse error"})
+	}
+}
+
+func copy(c *gin.Context) {
+	c.Header("Access-Control-Allow-Origin", "*")
+
+	profile := profileFromSession(c.Request)
+	if profile == nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"status": "unauthorized"})
+		return
+	}
+
+	if w, err := db.CopyTask(c.Param("id"), profile.ID, c.Request); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"status": "something wrong"})
+	} else {
+		c.JSON(http.StatusOK, w)
 	}
 }
 
@@ -229,6 +247,7 @@ func init() {
 	})
 	r.POST("/v1/task/:id/edit.json", edit)
 	r.DELETE("/v1/task/:id/edit.json", delete)
+	r.POST("/v1/task/:id/copy.json", copy)
 
 	r.POST("/v1/create_user.json", createUser)
 	r.GET("/v1/profile.json", profile)

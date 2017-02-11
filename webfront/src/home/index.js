@@ -108,6 +108,7 @@ class Task extends React.Component {
 
     this.changeReview = this.changeReview.bind(this);
     this.delete = this.delete.bind(this);
+    this.copy = this.copy.bind(this);
   }
 
   changeReview(e) {
@@ -152,6 +153,26 @@ class Task extends React.Component {
     });
   }
 
+  copy(e) {
+    e.preventDefault();
+
+    var url = config.host + "/v1/task/" + this.props.w.id + "/copy.json";
+
+    $.ajax({
+      type: 'post',
+      url: url,
+      contentType: 'application/json',
+      data: "",
+      success: function(data) {
+        this.props.doLoad();
+      }.bind(this),
+      error: function(xhr, status, err) {
+        console.error(url, status, err.toString());
+      }.bind(this)
+    });
+  }
+
+
   to_friendly_date(now, created_at) {
     var s;
     s = (now - new Date(created_at))/1000/3600/24;
@@ -185,13 +206,15 @@ class Task extends React.Component {
       </td>
       {memo}
       <td className="mdl-data-table__cell--non-numeric" style={{fontColor: 'rgba(0, 0, 0, 0.5)'}}>
-        <MemoInput text={this.props.w.norm_count} kind="norm_count" id={this.props.w.id} />
+        <MemoInput text={this.props.w.count} kind="norm_count" id={this.props.w.id} />
       </td>
       <td className="mdl-data-table__cell--non-numeric" style={{fontColor: 'rgba(0, 0, 0, 0.5)'}}>
-        <MemoInput text={this.props.w.count} kind="count" id={this.props.w.id} />
+        <MemoInput text={this.props.w.norm_count} kind="count" id={this.props.w.id} />
       </td>
       <td>{this.to_friendly_date(now, this.props.w.created_at)}</td>
       <td>
+      <IconButton name="content_copy" onClick={this.copy}/>
+      <div className="mdl-layout-spacer"></div>
       <IconButton name="delete" onClick={this.delete}/>
       </td>
      </tr>
