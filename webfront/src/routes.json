@@ -1,0 +1,41 @@
+[
+  {
+    "path": "/",
+    "page": "./top",
+    "chunk": "main",
+    "data": {
+    }
+  },
+  {
+    "path": "/error",
+    "page": "./error",
+    "chunk": "main"
+  },
+  {
+    "path": "/home",
+    "page": "./home"
+  },
+  {
+    "path": "/new",
+    "page": "./new"
+  },
+  {
+    "path": "/review",
+    "page": "./review"
+  },
+  {
+    "path": "/signup",
+    "page": "./signup"
+  },
+  {
+    "path": "/tasks/:status(pending|completed)?",
+    "page": "./top"
+  },
+  {
+	"path": "/user/:id",
+	"page": "./user",
+	"data": {
+		"words": "GET http://localhost:8080/v1/user/id/words.json"
+	}
+  }
+]
