@@ -8,7 +8,7 @@ import config from '../../components/Config';
 class ReviewPage extends React.Component {
 
   componentDidMount() {
-    document.title = "単語レビュー";
+    document.title = "レビュー";
   }
 
   constructor(props) {
@@ -19,7 +19,7 @@ class ReviewPage extends React.Component {
 
   load() {
     $.ajax({
-      url: config.host + "/v1/words.json?is_review=true&duration=12h",
+      url: config.host + "/v1/tasks.json?is_review=true&duration=12h",
       dataType: 'json',
       cache: false,
       success: function(data) {
@@ -33,16 +33,16 @@ class ReviewPage extends React.Component {
 
 
   render() {
-    var words = this.state.data
+    var tasks = this.state.data
     .map(function (t) {
-      return (<Word w={t} key={t.id}/>);
+      return (<Task w={t} key={t.id}/>);
     });
 
     return (
       <Layout className={s.content}>
       <div style={{margin: 'auto'}}>
           <Grid className="demo-grid-1">
-            {words}
+            {tasks}
           </Grid>
       </div>
       </Layout>
@@ -51,7 +51,7 @@ class ReviewPage extends React.Component {
 
 }
 
-class Word extends React.Component {
+class Task extends React.Component {
 
   constructor(props) {
     super(props);
@@ -61,7 +61,7 @@ class Word extends React.Component {
   updateReview(e) {
     e.preventDefault();
 
-    var url = config.host + "/v1/word/" + this.props.w.id + "/edit.json";
+    var url = config.host + "/v1/task/" + this.props.w.id + "/edit.json";
     var new_w = {"kind": "reviewed_at"};
     $.ajax({
       type: 'post',

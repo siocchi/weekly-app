@@ -9,13 +9,13 @@ import config from '../../components/Config';
 class HomePage extends React.Component {
 
   componentDidMount() {
-    document.title = "単語一覧";
+    document.title = "タスク一覧";
   }
 
   render() {
     return (
       <Layout className={s.content}>
-      <Detail url={config.host + "/v1/words.json"} interval={8000} />
+      <Detail url={config.host + "/v1/tasks.json"} interval={8000} />
       </Layout>
     );
   }
@@ -57,48 +57,47 @@ class Detail extends React.Component {
           <Cell col={12}>
             </Cell>
             <Cell col={12}>
-            <WordList data={this.state.data} doLoad={this.load.bind(this)}/>
+            <TaskList data={this.state.data} doLoad={this.load.bind(this)}/>
             </Cell>
         </Grid>
       </div>);
   }
 }
 
-class WordList extends React.Component{
+class TaskList extends React.Component{
   constructor(props) {
     super(props);
   }
 
   render() {
-    var words = this.props.data
+    var tasks = this.props.data
         // .sort( (a, b) => {
         //   return a.priority - b.priority;
         // })
         .map( (t) => {
-          return (<Word w={t} key={t.id} doLoad={this.props.doLoad}/>);
+          return (<Task w={t} key={t.id} doLoad={this.props.doLoad}/>);
         });
 
     return (
-    <table id="words" className="mdl-data-table" cellSpacing="0" width="100%">
+    <table id="tasks" className="mdl-data-table" cellSpacing="0" width="100%">
       <thead>
         <tr>
-          <th>Word</th>
-          <th>意味</th>
+          <th>タスク</th>
           <th className="mdl-data-table__cell--non-numeric" style={{width: 320 +"px"}}>Memo</th>
-          <th className="mdl-data-table__cell--non-numeric">needs Review</th>
+          <th className="mdl-data-table__cell--non-numeric">済</th>
           <th></th>
           <th></th>
         </tr>
       </thead>
       <tbody>
-        {words}
+        {tasks}
       </tbody>
     </table>
     );
   }
 }
 
-class Word extends React.Component {
+class Task extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -115,7 +114,7 @@ class Word extends React.Component {
   changeReview(e) {
     e.preventDefault();
 
-    var url = config.host + "/v1/word/" + this.props.w.id + "/edit.json";
+    var url = config.host + "/v1/task/" + this.props.w.id + "/edit.json";
     var new_w = {
       "is_review" : this.state.is_review ? false : true,
       "kind": "is_review"
@@ -138,7 +137,7 @@ class Word extends React.Component {
   changeInput(e) {
     e.preventDefault();
 
-    var url = config.host + "/v1/word/" + this.props.w.id + "/edit.json";
+    var url = config.host + "/v1/task/" + this.props.w.id + "/edit.json";
     var new_w = {
       "is_input" : this.state.is_input ? false : true,
       "kind": "is_input"
@@ -162,7 +161,7 @@ class Word extends React.Component {
   delete(e) {
     e.preventDefault();
 
-    var url = config.host + "/v1/word/" + this.props.w.id + "/edit.json";
+    var url = config.host + "/v1/task/" + this.props.w.id + "/edit.json";
 
     $.ajax({
       type: 'delete',
@@ -196,7 +195,6 @@ class Word extends React.Component {
     return (
      <tr>
       <td><strong><Checkbox label={this.props.w.text} checked={true} /></strong></td>
-      <td><a href={"https://en.wiktionary.org/wiki/" + this.props.w.text}><Icon name="link" /></a></td>
       <td className="mdl-data-table__cell--non-numeric" style={{fontColor: 'rgba(0, 0, 0, 0.5)'}}>
         <MemoInput memo={this.props.w.memo} id={this.props.w.id} />
       </td>
@@ -233,7 +231,7 @@ class MemoInput extends React.Component {
 
     if (this.refs.memo.value.trim().length==0 ) return;
 
-    var url = config.host + "/v1/word/" + this.props.id + "/edit.json";
+    var url = config.host + "/v1/task/" + this.props.id + "/edit.json";
     var new_w = {
       "memo" :  this.refs.memo.value,
       "kind": "memo"

@@ -3,10 +3,10 @@ import $ from 'jquery';
 import {Button, Grid, Icon, IconButton, Checkbox,Cell  } from 'react-mdl';
 import config from '../../components/Config';
 
-class UserWordPage extends React.Component {
+class UserTaskPage extends React.Component {
 
   componentDidMount() {
-    document.title = this.props.route.params.id + "さんの単語帳";
+    document.title = this.props.route.params.id + "さんのタスク一覧";
   }
 
   constructor(props) {
@@ -14,9 +14,9 @@ class UserWordPage extends React.Component {
   }
 
   render() {
-    var words = this.props.words
+    var tasks = this.props.tasks
       .map(function (t) {
-        return (<Word w={t} key={t.id}/>);
+        return (<Task w={t} key={t.id}/>);
       });
 
     return (
@@ -26,15 +26,15 @@ class UserWordPage extends React.Component {
           <Cell col={12}>
             </Cell>
             <Cell col={12}>
-            <table id="words" className="mdl-data-table" cellSpacing="0" width="100%" style={{width: '400px', borderRightStyle: 'none',borderLeftStyle: 'none'}}>
+            <table id="tasks" className="mdl-data-table" cellSpacing="0" width="100%" style={{width: '400px', borderRightStyle: 'none',borderLeftStyle: 'none'}}>
               <thead>
                 <tr>
                   <th className="mdl-data-table__cell--non-numeric">No</th>
-                  <th className="mdl-data-table__cell--non-numeric" >Word</th>
+                  <th className="mdl-data-table__cell--non-numeric" >Task</th>
                 </tr>
               </thead>
               <tbody>
-                {words}
+                {tasks}
               </tbody>
             </table>
             </Cell>
@@ -46,7 +46,7 @@ class UserWordPage extends React.Component {
 
 }
 
-class Word extends React.Component {
+class Task extends React.Component {
 
   constructor(props) {
     super(props);
@@ -62,7 +62,7 @@ class Word extends React.Component {
   }
 }
 
-export default UserWordPage;
+export default UserTaskPage;
 
 class Layout extends React.Component {
 
@@ -76,7 +76,7 @@ class Layout extends React.Component {
         <div className="mdl-layout__inner-container">
         <header className="mdl-layout__header">
           <div className="mdl-layout__header-row" style={{paddingLeft: '10px'}}>
-            <h4>{this.props.name} さんの単語一覧</h4>
+            <h4>{this.props.name} さんのタスク 一覧</h4>
             <div className="mdl-layout-spacer"></div>
             <Navigation name={this.props.name}/>
           </div>

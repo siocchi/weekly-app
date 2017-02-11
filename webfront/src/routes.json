@@ -35,7 +35,7 @@
 	"path": "/user/:id",
 	"page": "./user",
 	"data": {
-		"words": "GET http://localhost:8080/v1/user/id/words.json"
+		"tasks": "GET http://localhost:8080/v1/user/id/tasks.json"
 	}
   }
 ]
