@@ -10,7 +10,6 @@ import (
 	"google.golang.org/appengine"
 	"google.golang.org/appengine/datastore"
 	"github.com/google/uuid"
-	"regexp"
 	"errors"
 )
 
@@ -169,23 +168,20 @@ func (db *taskDbGoon) GetPublicAll(uid string, r *http.Request) ([]Task, error) 
 	}
 }
 
-func (db *taskDbGoon) GenId(task string, r *http.Request) (string, error) {
-	reg, _ := regexp.Compile("/ /")
-	replaced := reg.ReplaceAllString(task, "_")
-
+func (db *taskDbGoon) GenId(r *http.Request) (string, error) {
 	uuid, err1 := uuid.NewUUID()
 	if err1 != nil {
 		log.Debugf(appengine.NewContext(r), "%v", err1)
 		return "", err1
 	}
-	key := replaced + "_" + string(uuid.String()[0:5])
+	key := string(uuid.String()[0:5])
 
 	return key, nil
 }
 
 func (db *taskDbGoon) AddTask(uid string, w PostTask, r *http.Request) (string, error) {
 
-	key, err1 := db.GenId(w.Text, r)
+	key, err1 := db.GenId(r)
 	if err1 != nil {
 		log.Debugf(appengine.NewContext(r), "%v", err1)
 		return "", err1
