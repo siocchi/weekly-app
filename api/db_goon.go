@@ -14,7 +14,7 @@ import (
 	"errors"
 )
 
-type WordGoon struct {
+type TaskGoon struct {
 	Id    string 	`datastore:"-" goon:"id"`
 	Uid  *datastore.Key `datastore:"-" goon:"parent"`
 	Text string	`datastore:"text"`
@@ -35,15 +35,15 @@ type ProfileGoon struct {
 	CreatedAt time.Time `datastore:"created_at"`
 }
 
-type wordDbGoon struct {
+type taskDbGoon struct {
 	goon string
 }
 
-func newDbGoon() *wordDbGoon {
-	return &wordDbGoon{goon: ""}
+func newDbGoon() *taskDbGoon {
+	return &taskDbGoon{goon: ""}
 }
 
-func (db *wordDbGoon) GetProfileKey(uid string, r *http.Request) (*datastore.Key, error) {
+func (db *taskDbGoon) GetProfileKey(uid string, r *http.Request) (*datastore.Key, error) {
 	g := goon.NewGoon(r)
 	pkey := ProfileGoon{Uid: uid}
 	if uid_key, err := g.KeyError(&pkey); err != nil {
@@ -54,28 +54,28 @@ func (db *wordDbGoon) GetProfileKey(uid string, r *http.Request) (*datastore.Key
 	}
 }
 
-func (db *wordDbGoon) GetWord(key string, uid string, r *http.Request) (Word, error) {
+func (db *taskDbGoon) GetTask(key string, uid string, r *http.Request) (Task, error) {
 	g := goon.NewGoon(r)
 
 	uid_key, err := db.GetProfileKey(uid, r)
 	if err != nil {
-		return Word{}, err
+		return Task{}, err
 	}
 
-	w := new(WordGoon)
+	w := new(TaskGoon)
 	w.Id = key
 	w.Uid = uid_key
 
 	if err := g.Get(w); err != nil {
 		log.Debugf(appengine.NewContext(r), "%v", err)
-		return Word{}, err
+		return Task{}, err
 	}
 
 	if w.Uid != uid_key {
-		return Word{}, errors.New("uid invalid")
+		return Task{}, errors.New("uid invalid")
 	}
 
-	v := Word{
+	v := Task{
 		Id: key,
 		Text: w.Text,
 		Memo: w.Memo,
@@ -92,14 +92,14 @@ func (db *wordDbGoon) GetWord(key string, uid string, r *http.Request) (Word, er
 	return v, nil
 }
 
-func (db *wordDbGoon) GetAll(uid string, is_review bool, duration_s string, r *http.Request) ([]Word, error) {
+func (db *taskDbGoon) GetAll(uid string, is_review bool, duration_s string, r *http.Request) ([]Task, error) {
 
 	uid_key, err := db.GetProfileKey(uid, r)
 	if err != nil {
-		return []Word{}, err
+		return []Task{}, err
 	}
 
-	filter := datastore.NewQuery("WordGoon").Ancestor(uid_key)
+	filter := datastore.NewQuery("TaskGoon").Ancestor(uid_key)
 	if (is_review) {
 		filter = filter.Filter("is_review =", true)
 	}
@@ -108,23 +108,23 @@ func (db *wordDbGoon) GetAll(uid string, is_review bool, duration_s string, r *h
 		d, err := time.ParseDuration(duration_s)
 		if err!=nil {
 			log.Debugf(appengine.NewContext(r), "%v duration:%v", err, duration_s)
-			return []Word{}, err
+			return []Task{}, err
 		}
 		filter = filter.Filter("reviewed_at <", time.Now().Add(time.Duration(-1)*d)).Order("reviewed_at")
 	}
 
 	filter = filter.Order("-created_at").Limit(100).Offset(0)
 
-	words := []WordGoon{}
+	tasks := []TaskGoon{}
 	g := goon.NewGoon(r)
-	if _, err := g.GetAll(filter, &words); err != nil {
+	if _, err := g.GetAll(filter, &tasks); err != nil {
 		log.Debugf(appengine.NewContext(r), "%v", err)
-		return []Word{}, err
+		return []Task{}, err
 	}
 
-	ws := []Word{}
-	for _, w := range words {
-		v := Word{
+	ws := []Task{}
+	for _, w := range tasks {
+		v := Task{
 			Id: w.Id,
 			Text: w.Text,
 			Memo: w.Memo,
@@ -143,13 +143,13 @@ func (db *wordDbGoon) GetAll(uid string, is_review bool, duration_s string, r *h
 	return ws, nil
 }
 
-func (db *wordDbGoon) GetPublicAll(uid string, r *http.Request) ([]Word, error) {
+func (db *taskDbGoon) GetPublicAll(uid string, r *http.Request) ([]Task, error) {
 	if all, err := db.GetAll(uid, false, "", r); err != nil {
-		return []Word{}, err
+		return []Task{}, err
 	} else {
-		ws := []Word{}
+		ws := []Task{}
 		for _, w := range all {
-			v := Word{
+			v := Task{
 				Id: w.Id,
 				Text: w.Text,
 				Memo: "",
@@ -169,9 +169,9 @@ func (db *wordDbGoon) GetPublicAll(uid string, r *http.Request) ([]Word, error) 
 	}
 }
 
-func (db *wordDbGoon) GenId(word string, r *http.Request) (string, error) {
+func (db *taskDbGoon) GenId(task string, r *http.Request) (string, error) {
 	reg, _ := regexp.Compile("/ /")
-	replaced := reg.ReplaceAllString(word, "_")
+	replaced := reg.ReplaceAllString(task, "_")
 
 	uuid, err1 := uuid.NewUUID()
 	if err1 != nil {
@@ -183,7 +183,7 @@ func (db *wordDbGoon) GenId(word string, r *http.Request) (string, error) {
 	return key, nil
 }
 
-func (db *wordDbGoon) AddWord(uid string, w PostWord, r *http.Request) (string, error) {
+func (db *taskDbGoon) AddTask(uid string, w PostTask, r *http.Request) (string, error) {
 
 	key, err1 := db.GenId(w.Text, r)
 	if err1 != nil {
@@ -198,7 +198,7 @@ func (db *wordDbGoon) AddWord(uid string, w PostWord, r *http.Request) (string, 
 		return "", err
 	}
 
-	wg := WordGoon{
+	wg := TaskGoon{
 		Id:   key,
 		Uid:  uid_key,
 		Text: w.Text,
@@ -222,25 +222,25 @@ func (db *wordDbGoon) AddWord(uid string, w PostWord, r *http.Request) (string, 
 	return key, nil
 }
 
-func (db *wordDbGoon) EditWord(id string, uid string, ew EditWord, r *http.Request) (Word, error) {
+func (db *taskDbGoon) EditTask(id string, uid string, ew EditTask, r *http.Request) (Task, error) {
 
 	g := goon.NewGoon(r)
 
 	uid_key, err := db.GetProfileKey(uid, r)
 	if err != nil {
-		return Word{}, err
+		return Task{}, err
 	}
 
-	w := new(WordGoon)
+	w := new(TaskGoon)
 	w.Id = id
 	w.Uid = uid_key
 	if err := g.Get(w); err != nil {
 		log.Debugf(appengine.NewContext(r), "edit:%v", err)
-		return Word{}, err
+		return Task{}, err
 	}
 
 	if w.Uid != uid_key {
-		return Word{}, errors.New("uid invalid")
+		return Task{}, errors.New("uid invalid")
 	}
 
 	if (ew.Kind!="memo") {
@@ -261,7 +261,7 @@ func (db *wordDbGoon) EditWord(id string, uid string, ew EditWord, r *http.Reque
 		ew.ReviewedAt = time.Now()
 	}
 
-	wg := WordGoon{
+	wg := TaskGoon{
 		Id:   id,
 		Uid:  uid_key,
 		Text: w.Text,
@@ -278,15 +278,15 @@ func (db *wordDbGoon) EditWord(id string, uid string, ew EditWord, r *http.Reque
 
 	if _, err := g.Put(&wg); err != nil {
 		log.Debugf(appengine.NewContext(r), "%v", err)
-		return Word{}, err
+		return Task{}, err
 	}
 
-	w2, err := db.GetWord(id, uid, r)
+	w2, err := db.GetTask(id, uid, r)
 	log.Debugf(appengine.NewContext(r), "updated:%v", w2)
 	return w2, err
 }
 
-func (db *wordDbGoon) Delete(id string, uid string, r *http.Request) error {
+func (db *taskDbGoon) Delete(id string, uid string, r *http.Request) error {
 	g := goon.NewGoon(r)
 
 	uid_key, err := db.GetProfileKey(uid, r)
@@ -294,7 +294,7 @@ func (db *wordDbGoon) Delete(id string, uid string, r *http.Request) error {
 		return err
 	}
 
-	w := new(WordGoon)
+	w := new(TaskGoon)
 	w.Id = id
 	w.Uid = uid_key
 	if err := g.Get(w); err != nil {
@@ -306,7 +306,7 @@ func (db *wordDbGoon) Delete(id string, uid string, r *http.Request) error {
 		return errors.New("uid invalid")
 	}
 
-	wkey := new(WordGoon)
+	wkey := new(TaskGoon)
 	wkey.Id = id
 	wkey.Uid = uid_key
 	key, err := g.KeyError(wkey)
@@ -318,7 +318,7 @@ func (db *wordDbGoon) Delete(id string, uid string, r *http.Request) error {
 	return err2
 }
 
-func (db *wordDbGoon) GetUidByUser(user string, r *http.Request) (string, error) {
+func (db *taskDbGoon) GetUidByUser(user string, r *http.Request) (string, error) {
 	g := goon.NewGoon(r)
 
 	profiles := []ProfileGoon{}
@@ -335,20 +335,20 @@ func (db *wordDbGoon) GetUidByUser(user string, r *http.Request) (string, error)
 	return profiles[0].Uid, nil
 }
 
-func (db *wordDbGoon) GetUser(uid string, r *http.Request) (string, error) {
+func (db *taskDbGoon) GetUser(uid string, r *http.Request) (string, error) {
 	g := goon.NewGoon(r)
 	p := ProfileGoon{Uid: uid}
 	if err := g.Get(&p); err != nil {
 		log.Debugf(appengine.NewContext(r), "%v", err)
 		return "", err
 	} else {
-		log.Debugf(appengine.NewContext(r), "login with %v", p)			
+		log.Debugf(appengine.NewContext(r), "login with %v", p)
 		return p.UserName, nil
 	}
 }
 
 
-func (db *wordDbGoon) NewUser(uid string, user string, r *http.Request) error {
+func (db *taskDbGoon) NewUser(uid string, user string, r *http.Request) error {
 	g := goon.NewGoon(r)
 
 	// TODO validate username

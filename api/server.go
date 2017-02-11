@@ -8,14 +8,14 @@ import (
 	"time"
 )
 
-type WordDb interface {
-	GetAll(string, bool, string, *http.Request) ([]Word, error)
+type TaskDb interface {
+	GetAll(string, bool, string, *http.Request) ([]Task, error)
 
-	GetPublicAll(string, *http.Request) ([]Word, error)
+	GetPublicAll(string, *http.Request) ([]Task, error)
 
-	AddWord(string, PostWord, *http.Request) (string, error)
+	AddTask(string, PostTask, *http.Request) (string, error)
 
-	EditWord(string, string, EditWord, *http.Request) (Word, error)
+	EditTask(string, string, EditTask, *http.Request) (Task, error)
 
 	Delete(string, string, *http.Request) error
 
@@ -27,7 +27,7 @@ type WordDb interface {
 }
 
 type (
-	Word struct {
+	Task struct {
 		Id    string 	`json:"id"`
 		Text string	`json:"text"`
 		Memo string `json:"memo"`
@@ -41,11 +41,11 @@ type (
 		ReviewedAt time.Time `json:"reviewed_at"`
 	}
 
-	PostWord struct {
+	PostTask struct {
 		Text     string `form:"text" json:"text" binding:"required"`
 	}
 
-	EditWord struct {
+	EditTask struct {
 		Kind     string `form:"kind" json:"kind"`
 		Memo     string `form:"memo" json:"memo"`
 		Tag     string `form:"tag" json:"tag"`
@@ -62,10 +62,10 @@ type (
 )
 
 var (
-	db WordDb
+	db TaskDb
 )
 
-func words(c *gin.Context) {
+func tasks(c *gin.Context) {
 
 	profile := profileFromSession(c.Request)
 	if profile == nil {
@@ -83,7 +83,7 @@ func words(c *gin.Context) {
 	}
 }
 
-func wordsUnauthorized(c *gin.Context) {
+func tasksUnauthorized(c *gin.Context) {
 
 	uid, err := db.GetUidByUser(c.Param("user"), c.Request)
 	if err != nil {
@@ -100,7 +100,7 @@ func wordsUnauthorized(c *gin.Context) {
 }
 
 func create(c *gin.Context) {
-	var json PostWord
+	var json PostTask
 	c.Header("Access-Control-Allow-Origin", "*")
 
 	profile := profileFromSession(c.Request)
@@ -111,7 +111,7 @@ func create(c *gin.Context) {
 
 	if c.BindJSON(&json) == nil {
 		log.Debugf(appengine.NewContext(c.Request), "post:%v", json)
-		db.AddWord(profile.ID, json, c.Request)
+		db.AddTask(profile.ID, json, c.Request)
 		c.JSON(http.StatusOK, gin.H{"status": "ok"})
 	} else {
 		c.JSON(http.StatusBadRequest, gin.H{"status": "parse error"})
@@ -119,7 +119,7 @@ func create(c *gin.Context) {
 }
 
 func edit(c *gin.Context) {
-	var json EditWord
+	var json EditTask
 
 	profile := profileFromSession(c.Request)
 	if profile == nil {
@@ -132,7 +132,7 @@ func edit(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"status": "parse error"})
 		return
 	}
-	if w, err := db.EditWord(c.Param("id"), profile.ID, json, c.Request); err != nil {
+	if w, err := db.EditTask(c.Param("id"), profile.ID, json, c.Request); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"status": "something wrong"})
 	} else {
 		c.JSON(http.StatusOK, w)
@@ -213,24 +213,24 @@ func init() {
 	gin.SetMode(gin.DebugMode)
 	r := gin.Default()
 
-	r.GET("/v1/words.json", words)
-	r.OPTIONS("/v1/word.json", func(c *gin.Context) {
+	r.GET("/v1/tasks.json", tasks)
+	r.OPTIONS("/v1/task.json", func(c *gin.Context) {
 		c.Header("Access-Control-Allow-Origin", "*")
 		c.Header("Access-Control-Allow-Headers", "Content-Type")
 	})
-	r.POST("/v1/word.json", create)
+	r.POST("/v1/task.json", create)
 
-	r.OPTIONS("/v1/word/:id/edit.json", func(c *gin.Context) {
+	r.OPTIONS("/v1/task/:id/edit.json", func(c *gin.Context) {
 		c.Header("Access-Control-Allow-Origin", "*")
 		c.Header("Access-Control-Allow-Headers", "Content-Type")
 		c.Header("Access-Control-Allow-Methods", "POST, DELETE, OPTIONS")
 	})
-	r.POST("/v1/word/:id/edit.json", edit)
-	r.DELETE("/v1/word/:id/edit.json", delete)
+	r.POST("/v1/task/:id/edit.json", edit)
+	r.DELETE("/v1/task/:id/edit.json", delete)
 
 	r.POST("/v1/create_user.json", createUser)
 	r.GET("/v1/profile.json", profile)
-	r.GET("/v1/user/:user/words.json", wordsUnauthorized)
+	r.GET("/v1/user/:user/tasks.json", tasksUnauthorized)
 
 	http.HandleFunc("/v1/login", loginHandler)
 	http.HandleFunc("/v1/logout", logoutHandler)
