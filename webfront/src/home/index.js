@@ -206,10 +206,10 @@ class Task extends React.Component {
       </td>
       {memo}
       <td className="mdl-data-table__cell--non-numeric" style={{fontColor: 'rgba(0, 0, 0, 0.5)'}}>
-        <MemoInput text={this.props.w.count} kind="norm_count" id={this.props.w.id} />
+        <MemoInput text={this.props.w.count} kind="count" id={this.props.w.id} />
       </td>
       <td className="mdl-data-table__cell--non-numeric" style={{fontColor: 'rgba(0, 0, 0, 0.5)'}}>
-        <MemoInput text={this.props.w.norm_count} kind="count" id={this.props.w.id} />
+        <MemoInput text={this.props.w.norm_count} kind="norm_count" id={this.props.w.id} />
       </td>
       <td>{this.to_friendly_date(now, this.props.w.created_at)}</td>
       <td>
