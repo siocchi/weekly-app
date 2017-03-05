@@ -34,7 +34,7 @@ type (
 		Text string	`json:"text"`
 		Memo string `json:"memo"`
 		Tag	 string `json:"tag"`
-		IsReview bool `json:"is_review"`
+		InPlan bool `json:"in_plan"`
 		NormCount int `json:"norm_count"`
 		Count int	 `json:"count"`
 		Priority int `json:"priority"`
@@ -51,7 +51,7 @@ type (
 		Kind     string `form:"kind" json:"kind"`
 		Text     string `form:"text" json:"text"`
 		Memo     string `form:"memo" json:"memo"`
-		IsReview bool `json:"is_review"`
+		InPlan bool `json:"in_plan"`
 		NormCount int `json:"norm_count"`
 		Count     int `form:"count" json:"count"`
 		Priority  int `form:"priority" json:"priority"`
@@ -74,11 +74,11 @@ func tasks(c *gin.Context) {
 		c.JSON(http.StatusUnauthorized, gin.H{"status": "unauthorized"})
 		return
 	}
-	is_review := c.Query("is_review") == "true";
+	in_plan := c.Query("in_plan") == "true";
 	duration := c.Query("duration");
 
 	c.Header("Access-Control-Allow-Origin", "*")
-	if all, err := db.GetAll(profile.ID, is_review, duration, c.Request); err == nil {
+	if all, err := db.GetAll(profile.ID, in_plan, duration, c.Request); err == nil {
 		c.JSON(http.StatusOK, all)
 	} else {
 		c.JSON(http.StatusBadRequest, "error")

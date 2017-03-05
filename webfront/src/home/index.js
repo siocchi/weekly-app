@@ -82,13 +82,14 @@ class TaskList extends React.Component{
     <table id="tasks" className="mdl-data-table" cellSpacing="0" width="100%">
       <thead>
         <tr>
+        <th className="mdl-data-table__cell--non-numeric">今週やる</th>
           <th className="mdl-data-table__cell--non-numeric" style={{width: 240 +"px"}}>タスク</th>
-          <th className="mdl-data-table__cell--non-numeric">済</th>
           <th className="mdl-data-table__cell--non-numeric" style={{width: 240 +"px"}}>メモ</th>
           <th className="mdl-data-table__cell--non-numeric">済回数</th>
           <th className="mdl-data-table__cell--non-numeric">ノルマ</th>
-          <th></th>
-          <th></th>
+          <th>更新</th>
+          <th>作成</th>
+          <th>削除コピー</th>
         </tr>
       </thead>
       <tbody>
@@ -103,21 +104,21 @@ class Task extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      is_review: this.props.w.is_review,
+      in_plan: this.props.w.in_plan,
     };
 
-    this.changeReview = this.changeReview.bind(this);
+    this.changeInPlan = this.changeInPlan.bind(this);
     this.delete = this.delete.bind(this);
     this.copy = this.copy.bind(this);
   }
 
-  changeReview(e) {
+  changeInPlan(e) {
     e.preventDefault();
 
     var url = config.host + "/v1/task/" + this.props.w.id + "/edit.json";
     var new_w = {
-      "is_review" : this.state.is_review ? false : true,
-      "kind": "is_review"
+      "in_plan" : this.state.in_plan ? false : true,
+      "kind": "in_plan"
     };
     $.ajax({
       type: 'post',
@@ -126,7 +127,7 @@ class Task extends React.Component {
       data: JSON.stringify(new_w),
       success: function(data) {
         this.props.doLoad();
-        this.setState({is_review: data.is_review});
+        this.setState({in_plan: data.in_plan});
       }.bind(this),
       error: function(xhr, status, err) {
         console.error(url, status, err.toString());
@@ -189,28 +190,22 @@ class Task extends React.Component {
   render() {
     var now = new Date();
 
-    var memo;
-    if (this.state.is_review) {
-      memo = <td><MemoInput text={this.props.w.memo} kind="memo" id={this.props.w.id} /></td>;
-    } else {
-      memo = <td></td>;
-    }
-
     return (
      <tr>
+     <td>
+       <Switch id="switch2" checked={this.state.in_plan} onChange={this.changeInPlan}/>
+     </td>
       <td className="mdl-data-table__cell--non-numeric" style={{fontColor: 'rgba(0, 0, 0, 0.5)'}}>
         <MemoInput text={this.props.w.text} kind="text" id={this.props.w.id} />
       </td>
-      <td>
-        <Switch id="switch2" checked={this.state.is_review} onChange={this.changeReview}/>
-      </td>
-      {memo}
+      <td><MemoInput text={this.props.w.memo} kind="memo" id={this.props.w.id} /></td>
       <td className="mdl-data-table__cell--non-numeric" style={{fontColor: 'rgba(0, 0, 0, 0.5)'}}>
         <MemoInput text={this.props.w.count} kind="count" id={this.props.w.id} />
       </td>
       <td className="mdl-data-table__cell--non-numeric" style={{fontColor: 'rgba(0, 0, 0, 0.5)'}}>
         <MemoInput text={this.props.w.norm_count} kind="norm_count" id={this.props.w.id} />
       </td>
+      <td>{this.to_friendly_date(now, this.props.w.updated_at)}</td>
       <td>{this.to_friendly_date(now, this.props.w.created_at)}</td>
       <td>
       <IconButton name="content_copy" onClick={this.copy}/>

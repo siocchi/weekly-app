@@ -19,7 +19,7 @@ type TaskGoon struct {
 	Text string	`datastore:"text"`
 	Memo string `datastore:"memo"`
 	Tag	 string `datastore:"tag"`
-	IsReview bool `datastore:"is_review"`
+	InPlan bool `datastore:"in_plan"`
 	NormCount int `datastore:"norm_count"`
 	Count int	 `datastore:"count"`
 	Priority int `datastore:"priority"`
@@ -79,7 +79,7 @@ func (db *taskDbGoon) GetTask(key string, uid string, r *http.Request) (Task, er
 		Text: w.Text,
 		Memo: w.Memo,
 		Tag: w.Tag,
-		IsReview: w.IsReview,
+		InPlan: w.InPlan,
 		NormCount: w.NormCount,
 		Count: w.Count,
 		Priority: w.Priority,
@@ -91,7 +91,7 @@ func (db *taskDbGoon) GetTask(key string, uid string, r *http.Request) (Task, er
 	return v, nil
 }
 
-func (db *taskDbGoon) GetAll(uid string, is_review bool, duration_s string, r *http.Request) ([]Task, error) {
+func (db *taskDbGoon) GetAll(uid string, in_plan bool, duration_s string, r *http.Request) ([]Task, error) {
 
 	uid_key, err := db.GetProfileKey(uid, r)
 	if err != nil {
@@ -99,8 +99,8 @@ func (db *taskDbGoon) GetAll(uid string, is_review bool, duration_s string, r *h
 	}
 
 	filter := datastore.NewQuery("TaskGoon").Ancestor(uid_key)
-	if (is_review) {
-		filter = filter.Filter("is_review =", true)
+	if (in_plan) {
+		filter = filter.Filter("in_plan =", true)
 	}
 
 	if (duration_s != "") {
@@ -112,7 +112,7 @@ func (db *taskDbGoon) GetAll(uid string, is_review bool, duration_s string, r *h
 		filter = filter.Filter("reviewed_at <", time.Now().Add(time.Duration(-1)*d)).Order("reviewed_at")
 	}
 
-	filter = filter.Order("-created_at").Limit(100).Offset(0)
+	filter = filter.Order("-in_plan").Order("-created_at").Limit(100).Offset(0)
 
 	tasks := []TaskGoon{}
 	g := goon.NewGoon(r)
@@ -128,7 +128,7 @@ func (db *taskDbGoon) GetAll(uid string, is_review bool, duration_s string, r *h
 			Text: w.Text,
 			Memo: w.Memo,
 			Tag: w.Tag,
-			IsReview: w.IsReview,
+			InPlan: w.InPlan,
 			NormCount: w.NormCount,
 			Count: w.Count,
 			Priority: w.Priority,
@@ -153,7 +153,7 @@ func (db *taskDbGoon) GetPublicAll(uid string, r *http.Request) ([]Task, error) 
 				Text: w.Text,
 				Memo: "",
 				Tag: "",
-				IsReview: false,
+				InPlan: false,
 				NormCount: 0,
 				Count: w.Count,
 				Priority: w.Priority,
@@ -200,7 +200,7 @@ func (db *taskDbGoon) AddTask(uid string, w PostTask, r *http.Request) (string, 
 		Text: w.Text,
 		Memo: "",
 		Tag:  "",
-		IsReview: false,
+		InPlan: false,
 		NormCount: 0,
 		Count: 0,
 		Priority: 0,
@@ -245,8 +245,8 @@ func (db *taskDbGoon) EditTask(id string, uid string, ew EditTask, r *http.Reque
 	if (ew.Kind!="memo") {
 		ew.Memo = w.Memo
 	}
-	if (ew.Kind!="is_review") {
-		ew.IsReview = w.IsReview
+	if (ew.Kind!="in_plan") {
+		ew.InPlan = w.InPlan
 	}
 	if (ew.Kind!="norm_count") {
 		ew.NormCount = w.NormCount
@@ -266,7 +266,7 @@ func (db *taskDbGoon) EditTask(id string, uid string, ew EditTask, r *http.Reque
 		Text: ew.Text,
 		Memo: ew.Memo,
 		Tag: w.Tag,
-		IsReview: ew.IsReview,
+		InPlan: ew.InPlan,
 		NormCount: ew.NormCount,
 		Count: ew.Count,
 		Priority: ew.Priority,
@@ -318,7 +318,7 @@ func (db *taskDbGoon) CopyTask(id string, uid string, r *http.Request) (Task, er
 		Text: w.Text,
 		Memo: "",
 		Tag: "",
-		IsReview: false,
+		InPlan: false,
 		NormCount: w.NormCount,
 		Count: 0,
 		Priority: w.Priority,
