@@ -143,7 +143,7 @@ func (db *taskDbGoon) GetAll(uid string, is_review bool, duration_s string, r *h
 }
 
 func (db *taskDbGoon) GetPublicAll(uid string, r *http.Request) ([]Task, error) {
-	if all, err := db.GetAll(uid, false, "", r); err != nil {
+	if all, err := db.GetAll(uid, true, "", r); err != nil {
 		return []Task{}, err
 	} else {
 		ws := []Task{}

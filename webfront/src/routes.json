@@ -20,8 +20,11 @@
     "page": "./new"
   },
   {
-    "path": "/review",
-    "page": "./review"
+    "path": "/review/:id",
+    "page": "./review",
+    "data": {
+      "tasks": "GET /v1/user/id/tasks.json"
+    }
   },
   {
     "path": "/signup",
@@ -35,7 +38,7 @@
 	"path": "/user/:id",
 	"page": "./user",
 	"data": {
-		"tasks": "GET http://localhost:8080/v1/user/id/tasks.json"
+		"tasks": "GET /v1/user/id/tasks.json"
 	}
   }
 ]
